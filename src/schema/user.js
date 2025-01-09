@@ -40,7 +40,12 @@ const userSchema = new mongoose.Schema({
       } , 
       verificationTokenExpiry: {
         type: Date , 
+      } , 
+      recentWorkspaces: [ {
+        type: mongoose.Schema.Types.ObjectId ,
+        ref: 'Workspace' ,
       }
+      ]
     },
     {
         timestamps: true ,

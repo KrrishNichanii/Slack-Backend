@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 
-import { addChannelToWorkspaceService, addMemberToWorkspaceService, createWorkspaceService, deleteWorkspaceService, getWorkspaceByJoinCodeService, getWorkspaceService, getWorkSpaceUserIsPartOfService, joinWorkspaceService, resetWorkspaceJoinCodeService, updateWorkspaceService } from "../services/workspaceService.js";
+import { addChannelToWorkspaceService, addMemberToWorkspaceService, createWorkspaceService, deleteWorkspaceService, getRecentWorkspacesService, getWorkspaceByJoinCodeService, getWorkspaceByNameService, getWorkspaceService, getWorkSpaceUserIsPartOfService, joinWorkspaceService, resetWorkspaceJoinCodeService, sendUserMailToJoinWorkspaceService, updateWorkspaceService } from "../services/workspaceService.js";
 import { customErrorResponse, internalErrorResponse, successResponse } from "../utils/common/responseObjects.js";
 
 export const createWorkspaceController = async (req,res) => {
@@ -65,8 +65,7 @@ export const deleteWorkspaceController = async (req , res) => {
 
 export const getWorkspaceController = async (req,res) => {
     try {
-        console.log('WorkspaceId ',req.params);
-        
+        // console.log('WorkspaceId ',req.params);
         const response = await getWorkspaceService(
             req.params.workspaceId,
             req.user
@@ -109,6 +108,7 @@ export const getWorkspacebyJoinCodeController = async (req,res) => {
 
 export const updateWorkspaceController = async (req,res) => {
     try {
+      // console.log('Checking ');
         const updatedWorkspace = await updateWorkspaceService(req.params.workspaceId ,req.body , req.user) ;
 
         return res.status(StatusCodes.OK).json(successResponse(updatedWorkspace , 'Workspace updated successfully')) ;
@@ -216,3 +216,63 @@ export const joinWorkspaceController = async (req, res) => {
       .json(internalErrorResponse(error));
   }
 };
+
+export const  sendUserMailToJoinWorkspaceController = async (req , res) => {
+        try {
+          // console.log('Checking ');
+          
+           await sendUserMailToJoinWorkspaceService(req.body.email , req.body.joinCode  , req.body.workspaceName) ;
+           return res
+                    .status(StatusCodes.OK)
+                    .json(successResponse({}, 'Sent join code email successfully'));
+        } catch (error) {
+          console.log('Send user mail to workspace controller error', error);
+          if (error.statusCode) {
+            return res.status(error.statusCode).json(customErrorResponse(error));
+          }
+      
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(internalErrorResponse(error));
+        }
+}
+
+export const getRecentWorkspacesController = async (req , res) => {
+  try {
+    // console.log('Testing');
+    
+        const response = await getRecentWorkspacesService(req.user) ; 
+        return res
+                .status(StatusCodes.OK)
+                .json(successResponse(response, 'Recent workspaces fetched successfully'));
+  } catch (error) {
+      console.log('Get recent workspaces controller error', error);
+      if (error.statusCode) {
+        return res.status(error.statusCode).json(customErrorResponse(error));
+      }
+  
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalErrorResponse(error));
+  }
+}
+
+export const getWorkspaceByNameController = async (req , res) => {
+  try {
+    // console.log('Testing');
+    
+        const response = await getWorkspaceByNameService(req.body.workspaceName) ; 
+        return res
+                .status(StatusCodes.OK)
+                .json(successResponse(response, 'Workspace fetched successfully'));
+  } catch (error) {
+      console.log('Get  workspace by name controller error', error);
+      if (error.statusCode) {
+        return res.status(error.statusCode).json(customErrorResponse(error));
+      }
+  
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalErrorResponse(error));
+  }
+}

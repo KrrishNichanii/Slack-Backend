@@ -17,3 +17,11 @@ export const verifyEmailMail = function (verifcationToken) {
           `
     }
 }
+
+export const sendJoinCodeEmail = function (joinCode , workspaceName) {
+    return {
+        from: MAIL_ID ,
+        subject: 'Join Code' ,
+        text:`${joinCode} . This is the join code for joining ${workspaceName}`
+    }
+}

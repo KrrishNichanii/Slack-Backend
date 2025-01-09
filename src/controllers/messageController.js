@@ -36,7 +36,8 @@ export const getPresignedURLFromAWS = async (req , res) => {
 
         return res
                  .status(StatusCodes.OK)
-                 .json(successResponse(url , 'Presigned url fetched successfully from AWS'))
+                 .json(successResponse(url , 'Presigned url fetched successfully from AWS')) ;
+                 
     } catch (error) {
         console.log('Error in getPresignedURLFromAWS ' , error);
         if(error.statusCode){

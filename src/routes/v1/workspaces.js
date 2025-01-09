@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { addChannelToWorkspaceController, addMemberToWorkspaceController, createWorkspaceController, deleteWorkspaceController, getWorkspacebyJoinCodeController, getWorkspaceController, getWorkspacesUserIsMemberOfController, joinWorkspaceController, resetJoinCodeControllerController, updateWorkspaceController } from '../../controllers/workspaceController.js';
+import { addChannelToWorkspaceController, addMemberToWorkspaceController, createWorkspaceController, deleteWorkspaceController, getRecentWorkspacesController, getWorkspacebyJoinCodeController, getWorkspaceByNameController, getWorkspaceController, getWorkspacesUserIsMemberOfController, joinWorkspaceController, resetJoinCodeControllerController, sendUserMailToJoinWorkspaceController, updateWorkspaceController } from '../../controllers/workspaceController.js';
 import { isAuthenticated } from '../../middlewares/authMiddleware.js' 
 import { addChannelToWorkspaceSchema, addMemberToWorkspaceSchema, createWorkspaceSchema} from '../../validators/workspaceSchema.js';
 import { validate } from '../../validators/zodValidator.js';
@@ -15,7 +15,9 @@ router.post('/'
 
 router.get('/',isAuthenticated ,getWorkspacesUserIsMemberOfController) ;
 router.delete('/:workspaceId',isAuthenticated ,deleteWorkspaceController) ;
+router.get('/recent-workspaces',isAuthenticated ,getRecentWorkspacesController) ;
 router.get('/:workspaceId',isAuthenticated ,getWorkspaceController) ;
+router.post('/name' , isAuthenticated , getWorkspaceByNameController) ; 
 
 router.get(
     '/join/:joinCode',
@@ -23,6 +25,8 @@ router.get(
     getWorkspacebyJoinCodeController
   );
   
+router.post('/send-join-code' , isAuthenticated , sendUserMailToJoinWorkspaceController) ; 
+
 router.put(
 '/:workspaceId/join',
 isAuthenticated,
@@ -51,4 +55,6 @@ router.put(
 isAuthenticated,
 resetJoinCodeControllerController
 );
+
+
 export default router ; 

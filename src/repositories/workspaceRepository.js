@@ -16,6 +16,8 @@ const workspaceRepository = {
     } ,
     
     getWorkspaceByName: async  function(workspaceName) {
+        console.log('test ',workspaceName);
+        
         const workspace = await Workspace.findOne({
             name: workspaceName ,
         }) ;

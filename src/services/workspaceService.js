@@ -5,7 +5,7 @@ import { addEmailtoMailQueue } from '../producers/mailQueueProducer.js';
 import channelRepository from '../repositories/channelRepository.js';
 import userRepository from '../repositories/userRepository.js';
 import workspaceRepository from "../repositories/workspaceRepository.js"
-import  { workspaceJoinMail } from '../utils/common/mailObject.js';
+import  { sendJoinCodeEmail, workspaceJoinMail } from '../utils/common/mailObject.js';
 import ClientError from '../utils/errors/clientError.js';
 import ValidationError from '../utils/errors/validationError.js';
 
@@ -30,11 +30,11 @@ export const isUserMemberOfWorkspace = (workspace, userId) => {
     });
   };
   
-  const isChannelAlreadyPartOfWorkspace = (workspace, channelName) => {
-    return workspace.channels.find(
-      (channel) => channel.name.toLowerCase() === channelName.toLowerCase()
-    );
-  };
+const isChannelAlreadyPartOfWorkspace = (workspace, channelName) => {
+  return workspace.channels.find(
+    (channel) => channel.name.toLowerCase() === channelName.toLowerCase()
+  );
+};
 
 
 export const createWorkspaceService = async (workspaceData) => {
@@ -115,6 +115,7 @@ export const deleteWorkspaceService = async (workspaceId , userId) => {
 
 export const getWorkspaceService = async (workspaceId , userId) => {
     try {
+        await userRepository.addRecentWorkspace(userId , workspaceId) ; 
         const workspace =
           await workspaceRepository.getWorkspaceDetailsById(workspaceId);
         if (!workspace) {
@@ -356,5 +357,46 @@ export const joinWorkspaceService = async (workspaceId , joinCode , userId ) => 
   } catch (error) {
     console.log('Join workspace error ',error);
     throw error ; 
+  }
+}
+
+export const sendUserMailToJoinWorkspaceService = async (email , joinCode , workspaceName) => {
+    try {
+       const user = await userRepository.getByEmail(email) ; 
+       if(!user) {
+        throw new ClientError({
+          explanation: 'Invalid data sent from the client',
+          message: 'User not found',
+          statusCode: StatusCodes.NOT_FOUND
+        });
+       }
+       addEmailtoMailQueue({
+        ...sendJoinCodeEmail(joinCode , workspaceName) ,
+        to: email , 
+       })
+      
+    } catch (error) {
+      console.log('Send User mail to join workspace service  error ',error);
+      throw error ;
+    }
+}
+
+export const getRecentWorkspacesService = async (userId) => {
+    try {
+       const recentWorkspaces =  await userRepository.getRecentWorkspaces(userId) ; 
+       return recentWorkspaces ; 
+    } catch (error) {
+      console.log('Get recent workspaces service  error ',error);
+      throw error ;
+    }
+}
+
+export const getWorkspaceByNameService = async (workspaceName) => {
+  try {
+      const workspace = await workspaceRepository.getWorkspaceByName(workspaceName) ; 
+      return workspace ; 
+  } catch (error) {
+    console.log('Get workspace by name  service  error ',error);
+      throw error ;
   }
 }

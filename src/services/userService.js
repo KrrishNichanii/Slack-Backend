@@ -108,3 +108,16 @@ export const verifyTokenService = async (token) => {
         
     }
 }
+
+export const getRecentWorkspacesService = async (userId) => {
+    try {
+        const workspaces = await userRepository.getRecentWorkspaces(userId) ; 
+        return {
+            workspaces 
+        }
+    } catch (error) {
+        console.log('Get Recent Workspaces Service  error ' , error);
+        throw error ; 
+    }
+}
+
