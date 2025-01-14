@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { isAuthenticated } from '../../middlewares/authMiddleware.js' ;
 import { getDirectMessageChannelIdController } from '../../controllers/directMessageController.js';
+import { isAuthenticated } from '../../middlewares/authMiddleware.js' ;
 
 
 const router = express.Router() ;
