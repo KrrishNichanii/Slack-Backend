@@ -5,6 +5,7 @@ import Workspace from '../schema/workspace.js'
 import ClientError from '../utils/errors/clientError.js'
 import channelRepository from './channelRepository.js';
 import crudRepository from './crudRepository.js';
+import directMessageRepository from './directMessage.js';
 
 const workspaceRepository = {
     ...crudRepository(Workspace) ,
@@ -122,6 +123,25 @@ const workspaceRepository = {
 
         return workspaces ; 
     } ,
+
+    addDirectMessageChannelToWorkspace: async function(user1Id , user2Id , workspaceId) {
+        const workspace = await Workspace.findById(workspaceId).populate('channels') ;
+        
+        if(!workspace){
+            throw new ClientError({
+                explanation: 'Invalid data sent from the client' ,
+                message: 'Workspace not found' ,
+                statusCode: StatusCodes.NOT_FOUND
+            }) ;
+        } 
+        
+        const channel = await channelRepository.create({name: 'DM' ,workspaceId: workspaceId}) ; 
+        const directMessage =  await directMessageRepository.create(user1Id , user2Id , channel?._id) ; 
+        workspace.channels.push(channel) ; 
+        await workspace.save() ; 
+
+        return directMessage;
+    }
 } ;
 
 export default workspaceRepository ; 
