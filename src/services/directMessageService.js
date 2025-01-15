@@ -6,7 +6,6 @@ export const getDirectMessageChannelIdService = async (senderId , receiverId , w
         let channelId =  await  directMessageRepository.getChannelId(senderId , receiverId) ; 
 
         if(!channelId){ // make a new channel if it  doesnt exist . This happens when user1 DMs user2 for the first time
-        //    console.log('Creating new direct Message ');
             const directMessage = await workspaceRepository.addDirectMessageChannelToWorkspace(senderId , receiverId , workspaceId) ;
            channelId = directMessage?.channel ; 
         }

@@ -120,3 +120,12 @@ export const getRecentWorkspacesService = async (userId) => {
     }
 }
 
+export const getUserByIdService = async (userId) => {
+    try {
+       const user =  await userRepository.getById(userId) ; 
+       return user ; 
+    } catch (error) {
+        console.log('Get user by id Service  error ' , error);
+        throw error ; 
+    }
+}

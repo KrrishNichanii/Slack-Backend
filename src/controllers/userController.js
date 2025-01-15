@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 
-import { signInService, signUpService, verifyTokenService } from "../services/userService.js";
+import { getUserByIdService, signInService, signUpService, verifyTokenService } from "../services/userService.js";
 import { customErrorResponse, internalErrorResponse, successResponse } from "../utils/common/responseObjects.js";
 
 export  const signUp = async (req , res) => {
@@ -55,5 +55,24 @@ export const verifyEmailController = async (req , res) => {
                   .status(StatusCodes.INTERNAL_SERVER_ERROR)
                   .json(internalErrorResponse(error)) ;
 
+    }
+}
+
+export const getUserByIdController = async (req , res) => {
+    try {
+        console.log('E ',req.params);
+        
+        const response = await getUserByIdService(req.params?.userId) ; 
+        return res.status(StatusCodes.OK).json(successResponse(response, 'User fetched successfully')) ;
+    } catch (error) {
+        console.log('Get user by id  controller error ',error);
+        
+        if(error.statusCode){
+            return res.status(error.statusCode).json(customErrorResponse(error))
+        }
+        
+        return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json(internalErrorResponse(error)) ;
     }
 }
